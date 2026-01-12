@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepesh Batra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --red: #DC143C;
+            --gray: #666666;
+            --light-gray: #CCCCCC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* Subtle grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                radial-gradient(circle at 20% 50%, transparent 0%, rgba(220, 20, 60, 0.03) 100%),
+                radial-gradient(circle at 80% 80%, transparent 0%, rgba(220, 20, 60, 0.03) 100%);
+            background-size: 100px 100px, 100px 100px, 100% 100%, 100% 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        ::selection {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border: 2px solid var(--white);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.3;
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            opacity: 1;
+            background: var(--red);
+            border-color: var(--red);
+            transform: scale(1.5);
+        }
+
+        /* Section Divider */
+        .boundary-line {
+            width: 100%;
+            height: 1px;
+            background: var(--white);
+            opacity: 0.1;
+            margin: 120px 0;
+            position: relative;
+        }
+
+        .boundary-line::before,
+        .boundary-line::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 1px;
+            background: var(--red);
+            top: 0;
+        }
+
+        .boundary-line::before { left: 0; }
+        .boundary-line::after { right: 0; }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 0;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 80px;
+            align-items: center;
+            margin-bottom: 80px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .hero-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 30px;
+        }
+
+        .hero-roles {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--light-gray);
+            line-height: 1.8;
+        }
+
+        .hero-roles p {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bullet {
+            color: var(--red);
+            font-size: 1.2em;
+        }
+
+        /* Clock Styling */
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .clock {
+            width: 180px;
+            height: 180px;
+            border: 1px solid var(--white);
+            border-radius: 50%;
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 0 0 1px rgba(220, 20, 60, 0.1);
+        }
+
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background: var(--white);
+            border-radius: 10px;
+        }
+
+        .hour-hand {
+            width: 4px;
+            height: 50px;
+            margin-left: -2px;
+            z-index: 3;
+        }
+
+        .minute-hand {
+            width: 3px;
+            height: 70px;
+            margin-left: -1.5px;
+            z-index: 2;
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 80px;
+            margin-left: -1px;
+            background: var(--red);
+            z-index: 4;
+        }
+
+        .clock-center {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--red);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+        .clock-label {
+            text-align: center;
+        }
+
+        .timezone {
+            font-size: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .timezone-abbr {
+            font-size: 0.85rem;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        /* Hero Status */
+        .hero-status {
+            max-width: 800px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        .status-date {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--red);
+            margin-bottom: 15px;
+        }
+
+        .status-message {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            line-height: 1.6;
+            color: var(--light-gray);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* AI Workflows Section */
+        .ai-workflows {
+            padding: 120px 0;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--gray);
+            margin-bottom: 40px;
+        }
+
+        .ai-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .ai-intro {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin-bottom: 80px;
+            color: var(--light-gray);
+        }
+
+        .workflows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+        }
+
+        .workflow-card {
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .workflow-card:hover {
+            border-color: var(--red);
+            background: rgba(220, 20, 60, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .workflow-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--red);
+            opacity: 0.3;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        .workflow-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .workflow-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--light-gray);
+            margin-bottom: 30px;
+        }
+
+        .workflow-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tech-tag {
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            border-color: var(--red);
+            background: rgba(220, 20, 60, 0.1);
+        }
+
+        /* Journey Section */
+        .journey {
+            padding: 120px 0;
+        }
+
+        .journey-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 80px;
+            font-weight: 700;
+        }
+
+        .journey-item {
+            margin-bottom: 80px;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .journey-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .journey-period {
+            font-size: 0.85rem;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .journey-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .journey-company {
+            color: var(--red);
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .journey-achievement {
+            margin: 15px 0;
+            padding-left: 20px;
+            border-left: 2px solid var(--gray);
+            color: var(--light-gray);
+        }
+
+        .journey-footnote {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-style: italic;
+            max-width: 900px;
+        }
+
+        /* Skills Section */
+        .skills {
+            padding: 120px 0;
+        }
+
+        .skills-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 80px;
+            font-weight: 700;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px;
+        }
+
+        .skill-category h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--red);
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .skill-level {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Chat Section */
+        .chat-section {
+            padding: 120px 0;
+            background: var(--white);
+            color: var(--black);
+            margin: 0 -40px;
+        }
+
+        .chat-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .chat-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .chat-intro {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 60px;
+            max-width: 700px;
+        }
+
+        .chat-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 60px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--gray);
+            padding: 8px 16px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+        }
+
+        .chat-messages {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 20px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--red);
+        }
+
+        .message {
+            margin-bottom: 30px;
+            animation: messageSlide 0.4s ease;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .message-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 3px solid var(--red);
+        }
+
+        .message.user .message-content {
+            background: rgba(220, 20, 60, 0.05);
+        }
+
+        .quick-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quick-question-btn {
+            padding: 20px;
+            background: transparent;
+            border: 1px solid var(--black);
+            color: var(--black);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quick-question-btn:hover {
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--red);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 120px 0;
+            text-align: center;
+        }
+
+        .contact-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .contact-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 60px;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .contact-link {
+            font-size: 1rem;
+            color: var(--white);
+            text-decoration: none;
+            padding: 15px 40px;
+            border: 2px solid var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .contact-link:hover {
+            background: var(--red);
+            border-color: var(--red);
+            color: var(--white);
+        }
+
+        .footer {
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gray);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-left {
+                text-align: left;
+            }
+
+            .clock-container {
+                margin: 0 auto;
+            }
+
+            .journey-item {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .chat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-dots {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            .hero-grid {
+                gap: 30px;
+            }
+
+            .hero-left {
+                text-align: left;
+            }
+
+            .hero-roles p {
+                justify-content: flex-start;
+            }
+
+            .clock {
+                width: 150px;
+                height: 150px;
+            }
+
+            .hour-hand {
+                height: 40px;
+            }
+
+            .minute-hand {
+                height: 60px;
+            }
+
+            .second-hand {
+                height: 70px;
+            }
+
+            .workflows-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-section {
+                margin: 0 -20px;
+            }
+
+            .chat-container {
+                padding: 0 20px;
+            }
+
+            .hero-meta {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-link {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-section="hero"></div>
+        <div class="nav-dot" data-section="ai-workflows"></div>
+        <div class="nav-dot" data-section="journey"></div>
+        <div class="nav-dot" data-section="skills"></div>
+        <div class="nav-dot" data-section="chat"></div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-left">
+                    <h1 class="hero-name">Deepesh Batra</h1>
+                    <div class="hero-roles">
+                        <p><span class="bullet">•</span> Tech Enthusiast</p>
+                        <p><span class="bullet">•</span> Working as Account Manager at Telstra</p>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="clock-container">
+                        <div class="clock" id="clock">
+                            <div class="clock-face">
+                                <div class="hand hour-hand" id="hourHand"></div>
+                                <div class="hand minute-hand" id="minuteHand"></div>
+                                <div class="hand second-hand" id="secondHand"></div>
+                                <div class="clock-center"></div>
+                            </div>
+                        </div>
+                        <div class="clock-label">
+                            <div class="timezone">Sydney Time</div>
+                            <div class="timezone-abbr">AEST</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-status" id="heroStatus">
+                <p class="status-date" id="statusDate"></p>
+                <p class="status-message" id="statusMessage"></p>
+            </div>
+        </div>
+    </section>
+
+    <div class="boundary-line"></div>
+
+    <!-- AI Workflows -->
+    <section class="ai-workflows" id="ai-workflows">
+        <div class="container">
+            <div class="section-label">AI INTEGRATION</div>
+            <h2 class="ai-title reveal">How I Actually Use AI</h2>
+            <p class="ai-intro reveal">
+                Not just using ChatGPT to write emails. I build automated workflows that solve real business problems—saving time, improving accuracy, and letting me focus on what actually matters: the customers.
+            </p>
+            
+            <div class="workflows-grid">
+                <div class="workflow-card reveal">
+                    <div class="workflow-number">01</div>
+                    <h3 class="workflow-title">Social Media Automation</h3>
+                    <p class="workflow-description">
+                        Built end-to-end workflow using Make.com, Claude AI, and HeyGen that automatically creates, schedules, and posts content across multiple platforms. Processes 1000+ pieces monthly with 95% automation rate.
+                    </p>
+                    <div class="workflow-tech">
+                        <span class="tech-tag">Make.com</span>
+                        <span class="tech-tag">Claude AI</span>
+                        <span class="tech-tag">HeyGen</span>
+                    </div>
+                </div>
+
+                <div class="workflow-card reveal">
+                    <div class="workflow-number">02</div>
+                    <h3 class="workflow-title">Email Intelligence System</h3>
+                    <p class="workflow-description">
+                        Automated workflow that summarizes customer emails, categorizes by priority (urgent/high/medium/low), and generates contextual response drafts by analyzing tone, customer history, and intent.
+                    </p>
+                    <div class="workflow-tech">
+                        <span class="tech-tag">GPT-4</span>
+                        <span class="tech-tag">Salesforce API</span>
+                        <span class="tech-tag">Make.com</span>
+                    </div>
+                </div>
+
+                <div class="workflow-card reveal">
+                    <div class="workflow-number">03</div>
+                    <h3 class="workflow-title">Smart Response Generator</h3>
+                    <p class="workflow-description">
+                        AI system that understands customer sentiment, purchase history, and communication patterns to generate personalized responses that match the right tone—empathetic for complaints, enthusiastic for upgrades, detailed for technical queries.
+                    </p>
+                    <div class="workflow-tech">
+                        <span class="tech-tag">Claude AI</span>
+                        <span class="tech-tag">Sentiment Analysis</span>
+                        <span class="tech-tag">CRM Integration</span>
+                    </div>
+                </div>
+
+                <div class="workflow-card reveal">
+                    <div class="workflow-number">04</div>
+                    <h3 class="workflow-title">Daily Priority Optimizer</h3>
+                    <p class="workflow-description">
+                        Workflow that tracks daily tasks, automatically prioritizes based on urgency and impact, sends morning briefings, and adapts throughout the day as new priorities emerge. Saves 15+ hours weekly on task management.
+                    </p>
+                    <div class="workflow-tech">
+                        <span class="tech-tag">Power Automate</span>
+                        <span class="tech-tag">AI Prioritization</span>
+                        <span class="tech-tag">Todoist API</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="boundary-line"></div>
+
+    <!-- Journey -->
+    <section class="journey" id="journey">
+        <div class="container">
+            <h2 class="journey-title reveal">The Journey</h2>
+            
+            <div class="journey-item">
+                <div class="journey-period">JUNE 2024—PRESENT</div>
+                <div class="journey-content">
+                    <h3>Account Manager</h3>
+                    <div class="journey-company">Telstra Business and Technology Centre, Mascot</div>
+                    <div class="journey-achievement">
+                        Managing a portfolio of 700+ small to medium businesses across Sydney City, driving new revenue opportunities while maintaining and strengthening existing service relationships through Salesforce Einstein AI and Power BI analytics to identify cross-sell potential and predict churn with 85% accuracy.
+                    </div>
+                    <div class="journey-achievement">
+                        Automated executive reporting workflows using Make.com, ChatGPT API, and Power BI, reducing manual analysis time by 75%—saving 20 hours weekly.
+                    </div>
+                    <div class="journey-achievement">
+                        Focus on building genuine customer relationships by ensuring every client interaction leaves them feeling supported and confident about their Telstra services—turning technical issues and billing concerns into opportunities for trust-building and long-term partnership.
+                    </div>
+                </div>
+            </div>
+
+            <div class="journey-item">
+                <div class="journey-period">JUNE 2022—JUNE 2024</div>
+                <div class="journey-content">
+                    <h3>Assistant Store Manager</h3>
+                    <div class="journey-company">Telstra Retail Store, Sydney</div>
+                    <div class="journey-achievement">
+                        Transformed underperforming 15-person retail team into top performer, achieving 166% sales growth* over 12 months through AI-powered sales analytics and data-driven coaching.
+                    </div>
+                    <div class="journey-achievement">
+                        Mastered multiple enterprise systems including Salesforce, Jarvis, and Siebel for CRM and operations management. Led roster planning, workforce coordination, and team collaboration initiatives while presenting monthly performance outcomes to state and national leadership teams.
+                    </div>
+                </div>
+            </div>
+
+            <div class="journey-item">
+                <div class="journey-period">2024—2025</div>
+                <div class="journey-content">
+                    <h3>AI Platform Development</h3>
+                    <div class="journey-company">Personal Project</div>
+                    <div class="journey-achievement">
+                        Architected end-to-end AI automation system using Make.com, Claude AI, and HeyGen, processing 1000+ content pieces monthly with 95% automation rate.
+                    </div>
+                    <div class="journey-achievement">
+                        Tech stack: React, Node.js, Make.com, Claude AI, HeyGen, Supabase.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="journey-footnote">
+                <p>* Performance metric represents comprehensive team achievement over 6-month evaluation period, measuring combined outcomes across sales revenue, customer satisfaction scores, service quality metrics, and overall store performance indicators.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="boundary-line"></div>
+
+    <!-- Skills -->
+    <section class="skills" id="skills">
+        <div class="container">
+            <h2 class="skills-title reveal">Capabilities</h2>
+            <div class="skills-grid">
+                <div class="skill-category reveal">
+                    <h4>AI & Automation</h4>
+                    <ul class="skill-list">
+                        <li>ChatGPT / Claude AI <span class="skill-level">Advanced</span></li>
+                        <li>Make.com Workflows <span class="skill-level">Expert</span></li>
+                        <li>HeyGen Video AI <span class="skill-level">Proficient</span></li>
+                        <li>Prompt Engineering <span class="skill-level">Advanced</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-category reveal">
+                    <h4>Data & Analytics</h4>
+                    <ul class="skill-list">
+                        <li>Power BI <span class="skill-level">Expert</span></li>
+                        <li>Salesforce Einstein AI <span class="skill-level">Advanced</span></li>
+                        <li>Excel (Advanced) <span class="skill-level">Expert</span></li>
+                        <li>SQL <span class="skill-level">Proficient</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-category reveal">
+                    <h4>Business</h4>
+                    <ul class="skill-list">
+                        <li>B2B Account Management <span class="skill-level">Expert</span></li>
+                        <li>Team Leadership <span class="skill-level">Advanced</span></li>
+                        <li>Strategic Planning <span class="skill-level">Advanced</span></li>
+                        <li>Customer Success <span class="skill-level">Expert</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="boundary-line"></div>
+
+    <!-- Chat -->
+    <section class="chat-section" id="chat">
+        <div class="chat-container">
+            <h2 class="chat-title reveal">Ask Me Anything</h2>
+            <p class="chat-intro reveal">
+                I've trained an AI on my experience. Ask about my work, my approach, or what makes me different. It'll respond the way I would.
+            </p>
+            
+            <div class="chat-grid">
+                <div>
+                    <div class="chat-header">
+                        <div class="chat-label">CONVERSATION</div>
+                        <button class="clear-btn" onclick="clearChat()">CLEAR ALL</button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message">
+                            <div class="message-label">DEEPESH AI</div>
+                            <div class="message-content">
+                                Hey! I'm an AI trained on Deepesh's experience and way of thinking. Ask me anything about his work, his approach to problems, or what drives him. I'll respond honestly—no corporate speak.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quick-questions">
+                    <button class="quick-question-btn" onclick="askQuestion('What makes you different from other account managers?')">
+                        What makes you different from other account managers?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuestion('How do you actually use AI in your daily work?')">
+                        How do you actually use AI in your daily work?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuestion('Tell me about the 166% sales growth story')">
+                        Tell me about the 166% sales growth story
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuestion('Why should I hire you?')">
+                        Why should I hire you?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuestion('What do you want to do in 5 years?')">
+                        What do you want to do in 5 years?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuestion('What excites you about technology?')">
+                        What excites you about technology?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuestion('Tell me something personal')">
+                        Tell me something personal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact">
+        <div class="container">
+            <h2 class="contact-title reveal">Let's Talk</h2>
+            <p class="contact-subtitle reveal">
+                Open to Technical Account Manager roles, AI-focused positions, or just interesting conversations.
+            </p>
+            <div class="contact-links reveal">
+                <a href="mailto:deepeshbatra61@gmail.com" class="contact-link">Email Me</a>
+                <a href="https://linkedin.com/in/deepeshbatra" class="contact-link" target="_blank">LinkedIn</a>
+                <a href="tel:+61456011235" class="contact-link">Call: 0456 011 235</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            Built with HTML, CSS, and an AI-powered chat assistant.<br>
+            Because showing is better than telling.
+        </div>
+    </footer>
+
+    <script>
+        // Clock Functionality
+        function updateClock() {
+            const now = new Date();
+            
+            // Convert to Sydney time (AEDT)
+            const sydneyTime = new Date(now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+            
+            const hours = sydneyTime.getHours();
+            const minutes = sydneyTime.getMinutes();
+            const seconds = sydneyTime.getSeconds();
+            
+            // Calculate degrees
+            const hourDeg = (hours % 12) * 30 + minutes * 0.5;
+            const minuteDeg = minutes * 6 + seconds * 0.1;
+            const secondDeg = seconds * 6;
+            
+            // Update hands
+            document.getElementById('hourHand').style.transform = `rotate(${hourDeg}deg)`;
+            document.getElementById('minuteHand').style.transform = `rotate(${minuteDeg}deg)`;
+            document.getElementById('secondHand').style.transform = `rotate(${secondDeg}deg)`;
+        }
+
+        // Dynamic Status Messages
+        function updateStatus() {
+            const now = new Date();
+            const sydneyTime = new Date(now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+            
+            const day = sydneyTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const hours = sydneyTime.getHours();
+            const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][day];
+            
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Australia/Sydney' };
+            const dateStr = sydneyTime.toLocaleDateString('en-US', options);
+            
+            document.getElementById('statusDate').textContent = dateStr.toUpperCase();
+            
+            // Time-based messages
+            let message = '';
+            
+            // Weekend messages
+            if (day === 0) { // Sunday
+                if (hours >= 6 && hours < 12) {
+                    message = "It's Sunday morning—probably nursing a coffee and contemplating the week ahead.";
+                } else if (hours >= 12 && hours < 18) {
+                    message = "Sunday afternoon. Most likely watching cricket or tinkering with some new tech.";
+                } else if (hours >= 18 && hours < 23) {
+                    message = "Sunday evening. Preparing for Monday or pretending Monday doesn't exist.";
+                } else {
+                    message = "It's past midnight on a Sunday. Either deep in a coding project or should be sleeping.";
+                }
+            } else if (day === 6) { // Saturday
+                if (hours >= 6 && hours < 12) {
+                    message = "Saturday morning—the best time to explore new AI tools without meetings interrupting.";
+                } else if (hours >= 12 && hours < 18) {
+                    message = "Saturday afternoon. Perfect time for side projects or a good cricket match.";
+                } else if (hours >= 18 && hours < 23) {
+                    message = "Saturday night. Either out or deep in a tech rabbit hole.";
+                } else {
+                    message = "Past midnight on Saturday. Late night coding session or insomnia browsing tech blogs.";
+                }
+            } else if (day === 1) { // Monday
+                if (hours >= 8 && hours < 10) {
+                    message = "Monday morning. Who doesn't love Mondays? (Said no one ever, but here we are.)";
+                } else if (hours >= 10 && hours < 14) {
+                    message = "Late Monday morning—most likely in back-to-back meetings pretending to pay attention.";
+                } else if (hours >= 14 && hours < 18) {
+                    message = "Monday afternoon at Telstra, probably analyzing data or responding to customer queries.";
+                } else if (hours >= 18 && hours < 23) {
+                    message = "Monday evening. Either still at work or decompressing at home.";
+                } else {
+                    message = "Past midnight on Monday. Either working on something exciting or need better sleep habits.";
+                }
+            } else if (day === 5) { // Friday
+                if (hours >= 8 && hours < 12) {
+                    message = "Friday morning. The finish line is in sight, but still have work to pretend to do.";
+                } else if (hours >= 12 && hours < 16) {
+                    message = "Friday afternoon—most likely at work, pretending to work hard and trying to impress my bosses.";
+                } else if (hours >= 16 && hours < 19) {
+                    message = "Late Friday afternoon. Wrapping up the week or already mentally checked out.";
+                } else if (hours >= 19 && hours < 23) {
+                    message = "Friday night—celebrating the end of the work week or working on side projects.";
+                } else {
+                    message = "Past midnight on Friday. Either out or deep in a coding session.";
+                }
+            } else { // Tuesday, Wednesday, Thursday
+                if (hours >= 8 && hours < 12) {
+                    message = `${dayName} morning at Telstra—juggling accounts, analyzing data, and making AI do the boring stuff.`;
+                } else if (hours >= 12 && hours < 14) {
+                    message = `${dayName} lunch time. Probably grabbing a quick bite between meetings.`;
+                } else if (hours >= 14 && hours < 18) {
+                    message = `${dayName} afternoon—most likely at work, pretending to work hard and trying to impress my bosses.`;
+                } else if (hours >= 18 && hours < 23) {
+                    message = `${dayName} evening. Either wrapping up work or diving into personal projects.`;
+                } else {
+                    message = `Past midnight on ${dayName}. Late night productivity or just bad time management.`;
+                }
+            }
+            
+            document.getElementById('statusMessage').textContent = message;
+        }
+
+        // Initialize
+        updateClock();
+        updateStatus();
+        
+        // Update clock every second
+        setInterval(updateClock, 1000);
+        
+        // Update status every minute
+        setInterval(updateStatus, 60000);
+
+        // Clear chat function
+        function clearChat() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="message">
+                    <div class="message-label">DEEPESH AI</div>
+                    <div class="message-content">
+                        Hey! I'm an AI trained on Deepesh's experience and way of thinking. Ask me anything about his work, his approach to problems, or what drives him. I'll respond honestly—no corporate speak.
+                    </div>
+                </div>
+            `;
+        }
+
+        // AI Chat Responses
+        const responses = {
+            "what makes you different from other account managers": 
+                `I focus on making things actually work better. Most account managers manage accounts—I use AI to predict problems before they happen, automate repetitive tasks, and treat every client interaction as a chance to deliver real value. Data-driven strategies combined with genuine customer care.`,
+
+            "how do you actually use ai in your daily work":
+                `Daily: Predictive analytics via Salesforce Einstein to identify at-risk accounts with 85% accuracy. Automated reporting using Microsoft Copilot and AI workflows, saving 20 hours weekly. AI-powered email intelligence that categorizes priority and generates contextual responses. Pattern recognition across 700+ accounts to solve problems proactively.`,
+
+            "tell me about the 166% sales growth story":
+                `When I took over the team, they were struggling. Low morale, missing targets, customers weren't happy.\n\nI implemented one philosophy: "Treat them like I'd want to be treated—times ten."\n\nThen backed it with data:\n- Used Power BI to track what actually drove sales\n- Identified which products solved real problems vs which we were pushing for commission\n- Coached the team on consultative selling, not transactional\n\nThe turning point? When the team realized happy customers come back and refer others. We stopped chasing short-term sales and started building relationships.\n\nResult: 166% growth over 12 months. Not magic. Just treating people right + using data to find and fix problems.\n\nOh, and it reduced staff turnover by 35%. Turns out people like working in an environment focused on doing right by customers, not just hitting quotas.`,
+
+            "why should i hire you":
+                `Proven results: 166% team growth, 94% retention across 700+ accounts, 85% churn prediction accuracy. I speak both business and tech—can build AI automation systems and explain ROI to executives. Genuinely care about customer outcomes, not just metrics. Don't wait for perfect conditions—make things work.`,
+
+            "what do you want to do in 5 years":
+                `Use AI and technology to solve real problems that improve people's lives—not just shareholder value, but making systems work better for everyone. Lead teams reimagining how services reach underserved communities. Do work that matters at scale where impact is real and measurable.`,
+
+            "what excites you about technology":
+                `Tools that actually solve problems. I'm a gadget enthusiast—try every new device or platform if it's useful. Automating a 20-hour task down to 5 hours using AI and Microsoft Copilot? That's exciting. Frees time for work requiring human judgment. Better outcomes, not tech for tech's sake.`,
+
+            "tell me something personal":
+                `Cricket fanatic—Sachin Tendulkar is my hero, watched every match possible. Favorite movie is The Dark Knight, seen it at least 15 times. Love trying new tech gadgets before anyone else does. Coffee enthusiast who takes weekend mornings seriously. Still dream about that Plan A cricket career sometimes.`,
+
+            "default": 
+                `I focus on making things work better through practical AI implementation and genuine customer care. Early tech adopter, data-driven decision maker, customer-obsessed. Ask me something specific about experience, approach, or what drives me—I've got context on all of it.`
+        };
+
+        function askQuestion(question) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `
+                <div class="message-label">YOU</div>
+                <div class="message-content">${question}</div>
+            `;
+            chatMessages.appendChild(userMsg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulate thinking delay
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message';
+                
+                // Find matching response
+                const normalizedQ = question.toLowerCase();
+                let response = responses.default;
+                
+                for (const [key, value] of Object.entries(responses)) {
+                    if (normalizedQ.includes(key)) {
+                        response = value;
+                        break;
+                    }
+                }
+                
+                aiMsg.innerHTML = `
+                    <div class="message-label">DEEPESH AI</div>
+                    <div class="message-content">${response.replace(/\n/g, '<br>')}</div>
+                `;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 800);
+        }
+
+        // Intersection Observer for scroll animations (bidirectional)
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                } else {
+                    // Remove visible class when scrolling away
+                    entry.target.classList.remove('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all reveal elements
+        document.querySelectorAll('.reveal, .journey-item, .workflow-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navigation dots
+        const sections = document.querySelectorAll('section[id]');
+        const navDots = document.querySelectorAll('.nav-dot');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navDots.forEach(dot => {
+                dot.classList.remove('active');
+                if (dot.getAttribute('data-section') === current) {
+                    dot.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll for nav dots
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const section = dot.getAttribute('data-section');
+                document.getElementById(section).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
