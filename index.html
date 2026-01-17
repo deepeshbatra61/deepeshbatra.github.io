@@ -34,6 +34,17 @@
             overflow-x: hidden;
         }
 
+        /* Starfield Canvas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
         /* Subtle grid background */
         body::before {
             content: '';
@@ -478,6 +489,8 @@
             background: var(--white);
             color: var(--black);
             margin: 0 -40px;
+            position: relative;
+            z-index: 2;
         }
 
         .chat-container {
@@ -786,6 +799,8 @@
     </style>
 </head>
 <body>
+    <canvas id="starfield"></canvas>
+    
     <!-- Navigation Dots -->
     <div class="nav-dots">
         <div class="nav-dot active" data-section="hero"></div>
@@ -1075,7 +1090,167 @@
     </footer>
 
     <script>
-        // Clock Functionality
+        // ==========================================
+        // STARFIELD CONSTELLATION ANIMATION
+        // ==========================================
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        let stars = [];
+        const numStars = 120;
+        const connectionDistance = 150;
+        const mouseRadius = 200;
+
+        let mouse = {
+            x: null,
+            y: null
+        };
+
+        // Track mouse position
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        // Reset mouse when it leaves window
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        // Resize canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Star class
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+                this.twinkleDirection = 1;
+            }
+
+            update() {
+                // Move star
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Wrap around edges
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+
+                // Twinkle effect
+                this.opacity += this.twinkleSpeed * this.twinkleDirection;
+                if (this.opacity >= 0.8 || this.opacity <= 0.2) {
+                    this.twinkleDirection *= -1;
+                }
+
+                // Mouse interaction - stars move away from cursor
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = this.x - mouse.x;
+                    const dy = this.y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouseRadius) {
+                        const force = (mouseRadius - distance) / mouseRadius;
+                        this.x += dx * force * 0.02;
+                        this.y += dy * force * 0.02;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        // Initialize stars
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push(new Star());
+            }
+        }
+
+        // Draw connections between nearby stars
+        function drawConnections() {
+            for (let i = 0; i < stars.length; i++) {
+                for (let j = i + 1; j < stars.length; j++) {
+                    const dx = stars[i].x - stars[j].x;
+                    const dy = stars[i].y - stars[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        const opacity = (1 - distance / connectionDistance) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(stars[i].x, stars[i].y);
+                        ctx.lineTo(stars[j].x, stars[j].y);
+                        ctx.strokeStyle = `rgba(220, 20, 60, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw connections to mouse
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = stars[i].x - mouse.x;
+                    const dy = stars[i].y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouseRadius) {
+                        const opacity = (1 - distance / mouseRadius) * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(stars[i].x, stars[i].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(220, 20, 60, ${opacity})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Animation loop
+        function animateStarfield() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw stars
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+
+            // Draw constellation lines
+            drawConnections();
+
+            requestAnimationFrame(animateStarfield);
+        }
+
+        // Start animation
+        initStars();
+        animateStarfield();
+
+        // Reinitialize on resize
+        window.addEventListener('resize', initStars);
+
+        // ==========================================
+        // CLOCK FUNCTIONALITY
+        // ==========================================
         function updateClock() {
             const now = new Date();
             
@@ -1097,7 +1272,9 @@
             document.getElementById('secondHand').style.transform = `rotate(${secondDeg}deg)`;
         }
 
-        // Dynamic Status Messages
+        // ==========================================
+        // DYNAMIC STATUS MESSAGES
+        // ==========================================
         function updateStatus() {
             const now = new Date();
             const sydneyTime = new Date(now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
@@ -1177,7 +1354,7 @@
             document.getElementById('statusMessage').textContent = message;
         }
 
-        // Initialize
+        // Initialize clock and status
         updateClock();
         updateStatus();
         
@@ -1187,7 +1364,9 @@
         // Update status every minute
         setInterval(updateStatus, 60000);
 
-        // Clear chat function
+        // ==========================================
+        // CHAT FUNCTIONALITY
+        // ==========================================
         function clearChat() {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = `
@@ -1265,7 +1444,9 @@
             }, 800);
         }
 
-        // Intersection Observer for scroll animations (bidirectional)
+        // ==========================================
+        // SCROLL ANIMATIONS
+        // ==========================================
         const observerOptions = {
             threshold: 0.2,
             rootMargin: '0px 0px -100px 0px'
@@ -1287,7 +1468,9 @@
             observer.observe(el);
         });
 
-        // Navigation dots
+        // ==========================================
+        // NAVIGATION DOTS
+        // ==========================================
         const sections = document.querySelectorAll('section[id]');
         const navDots = document.querySelectorAll('.nav-dot');
 
