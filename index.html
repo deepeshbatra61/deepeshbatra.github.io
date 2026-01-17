@@ -13,11 +13,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --black: #000000;
-            --white: #FFFFFF;
-            --red: #DC143C;
+            --bg: #000000;
+            --text: #FFFFFF;
+            --text-muted: #CCCCCC;
             --gray: #666666;
-            --light-gray: #CCCCCC;
+            --red: #DC143C;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --grid-color: rgba(255, 255, 255, 0.02);
+        }
+
+        [data-theme="light"] {
+            --bg: #FAFAFA;
+            --text: #1A1A1A;
+            --text-muted: #4A4A4A;
+            --gray: #888888;
+            --red: #DC143C;
+            --card-bg: rgba(0, 0, 0, 0.02);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --grid-color: rgba(0, 0, 0, 0.03);
         }
 
         * {
@@ -28,10 +42,11 @@
 
         body {
             font-family: 'IBM Plex Mono', monospace;
-            background: var(--black);
-            color: var(--white);
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.8;
             overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
         /* Starfield Canvas */
@@ -54,8 +69,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
                 radial-gradient(circle at 20% 50%, transparent 0%, rgba(220, 20, 60, 0.03) 100%),
                 radial-gradient(circle at 80% 80%, transparent 0%, rgba(220, 20, 60, 0.03) 100%);
             background-size: 100px 100px, 100px 100px, 100% 100%, 100% 100%;
@@ -65,7 +80,7 @@
 
         ::selection {
             background: var(--red);
-            color: var(--white);
+            color: #FFFFFF;
         }
 
         .container {
@@ -74,6 +89,53 @@
             padding: 0 40px;
             position: relative;
             z-index: 1;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            z-index: 1000;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--red);
+            transform: scale(1.1);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle .sun-icon {
+            display: none;
+        }
+
+        .theme-toggle .moon-icon {
+            display: block;
+        }
+
+        [data-theme="light"] .theme-toggle .sun-icon {
+            display: block;
+        }
+
+        [data-theme="light"] .theme-toggle .moon-icon {
+            display: none;
         }
 
         /* Navigation Dots */
@@ -91,7 +153,7 @@
         .nav-dot {
             width: 8px;
             height: 8px;
-            border: 2px solid var(--white);
+            border: 2px solid var(--text);
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -110,7 +172,7 @@
         .boundary-line {
             width: 100%;
             height: 1px;
-            background: var(--white);
+            background: var(--text);
             opacity: 0.1;
             margin: 120px 0;
             position: relative;
@@ -158,7 +220,7 @@
 
         .hero-roles {
             font-size: clamp(1rem, 2vw, 1.3rem);
-            color: var(--light-gray);
+            color: var(--text-muted);
             line-height: 1.8;
         }
 
@@ -185,11 +247,12 @@
         .clock {
             width: 180px;
             height: 180px;
-            border: 1px solid var(--white);
+            border: 1px solid var(--text);
             border-radius: 50%;
             position: relative;
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--card-bg);
             box-shadow: 0 0 0 1px rgba(220, 20, 60, 0.1);
+            transition: all 0.3s ease;
         }
 
         .clock-face {
@@ -203,8 +266,9 @@
             bottom: 50%;
             left: 50%;
             transform-origin: bottom center;
-            background: var(--white);
+            background: var(--text);
             border-radius: 10px;
+            transition: background 0.3s ease;
         }
 
         .hour-hand {
@@ -274,7 +338,7 @@
         .status-message {
             font-size: clamp(1.1rem, 2.5vw, 1.5rem);
             line-height: 1.6;
-            color: var(--light-gray);
+            color: var(--text-muted);
         }
 
         @keyframes fadeInUp {
@@ -312,7 +376,7 @@
             line-height: 1.8;
             max-width: 800px;
             margin-bottom: 80px;
-            color: var(--light-gray);
+            color: var(--text-muted);
         }
 
         .workflows-grid {
@@ -323,8 +387,8 @@
 
         .workflow-card {
             padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
             transition: all 0.3s ease;
         }
 
@@ -353,7 +417,7 @@
         .workflow-description {
             font-size: 1rem;
             line-height: 1.7;
-            color: var(--light-gray);
+            color: var(--text-muted);
             margin-bottom: 30px;
         }
 
@@ -366,8 +430,8 @@
         .tech-tag {
             font-size: 0.75rem;
             padding: 6px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--white);
+            border: 1px solid var(--card-border);
+            color: var(--text);
             letter-spacing: 1px;
             transition: all 0.3s ease;
         }
@@ -427,13 +491,13 @@
             margin: 15px 0;
             padding-left: 20px;
             border-left: 2px solid var(--gray);
-            color: var(--light-gray);
+            color: var(--text-muted);
         }
 
         .journey-footnote {
             margin-top: 60px;
             padding-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--card-border);
             font-size: 0.85rem;
             color: var(--gray);
             font-style: italic;
@@ -471,7 +535,7 @@
 
         .skill-list li {
             padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--card-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -483,14 +547,20 @@
             color: var(--gray);
         }
 
-        /* Chat Section */
+        /* Chat Section - Always inverted from main theme */
         .chat-section {
             padding: 120px 0;
-            background: var(--white);
-            color: var(--black);
+            background: #FFFFFF;
+            color: #000000;
             margin: 0 -40px;
             position: relative;
             z-index: 2;
+            transition: all 0.4s ease;
+        }
+
+        [data-theme="light"] .chat-section {
+            background: #1A1A1A;
+            color: #FFFFFF;
         }
 
         .chat-container {
@@ -508,9 +578,13 @@
 
         .chat-intro {
             font-size: 1.1rem;
-            color: var(--gray);
+            color: #666666;
             margin-bottom: 60px;
             max-width: 700px;
+        }
+
+        [data-theme="light"] .chat-intro {
+            color: #AAAAAA;
         }
 
         .chat-grid {
@@ -528,13 +602,17 @@
 
         .chat-label {
             font-size: 0.85rem;
-            color: var(--gray);
+            color: #666666;
+        }
+
+        [data-theme="light"] .chat-label {
+            color: #AAAAAA;
         }
 
         .clear-btn {
             background: transparent;
-            border: 1px solid var(--gray);
-            color: var(--gray);
+            border: 1px solid #666666;
+            color: #666666;
             padding: 8px 16px;
             font-family: 'IBM Plex Mono', monospace;
             font-size: 0.75rem;
@@ -542,10 +620,21 @@
             transition: all 0.3s ease;
         }
 
+        [data-theme="light"] .clear-btn {
+            border-color: #AAAAAA;
+            color: #AAAAAA;
+        }
+
         .clear-btn:hover {
-            background: var(--black);
-            color: var(--white);
-            border-color: var(--black);
+            background: #000000;
+            color: #FFFFFF;
+            border-color: #000000;
+        }
+
+        [data-theme="light"] .clear-btn:hover {
+            background: #FFFFFF;
+            color: #1A1A1A;
+            border-color: #FFFFFF;
         }
 
         .chat-messages {
@@ -559,7 +648,11 @@
         }
 
         .chat-messages::-webkit-scrollbar-track {
-            background: var(--light-gray);
+            background: #CCCCCC;
+        }
+
+        [data-theme="light"] .chat-messages::-webkit-scrollbar-track {
+            background: #333333;
         }
 
         .chat-messages::-webkit-scrollbar-thumb {
@@ -584,9 +677,13 @@
 
         .message-label {
             font-size: 0.8rem;
-            color: var(--gray);
+            color: #666666;
             margin-bottom: 8px;
             letter-spacing: 1px;
+        }
+
+        [data-theme="light"] .message-label {
+            color: #AAAAAA;
         }
 
         .message-content {
@@ -597,8 +694,16 @@
             border-left: 3px solid var(--red);
         }
 
+        [data-theme="light"] .message-content {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .message.user .message-content {
             background: rgba(220, 20, 60, 0.05);
+        }
+
+        [data-theme="light"] .message.user .message-content {
+            background: rgba(220, 20, 60, 0.15);
         }
 
         .quick-questions {
@@ -610,8 +715,8 @@
         .quick-question-btn {
             padding: 20px;
             background: transparent;
-            border: 1px solid var(--black);
-            color: var(--black);
+            border: 1px solid #000000;
+            color: #000000;
             font-family: 'IBM Plex Mono', monospace;
             font-size: 0.85rem;
             cursor: pointer;
@@ -619,9 +724,20 @@
             text-align: left;
         }
 
+        [data-theme="light"] .quick-question-btn {
+            border-color: #FFFFFF;
+            color: #FFFFFF;
+        }
+
         .quick-question-btn:hover {
-            background: var(--black);
-            color: var(--white);
+            background: #000000;
+            color: #FFFFFF;
+            border-color: var(--red);
+        }
+
+        [data-theme="light"] .quick-question-btn:hover {
+            background: #FFFFFF;
+            color: #1A1A1A;
             border-color: var(--red);
         }
 
@@ -654,22 +770,22 @@
 
         .contact-link {
             font-size: 1rem;
-            color: var(--white);
+            color: var(--text);
             text-decoration: none;
             padding: 15px 40px;
-            border: 2px solid var(--white);
+            border: 2px solid var(--text);
             transition: all 0.3s ease;
         }
 
         .contact-link:hover {
             background: var(--red);
             border-color: var(--red);
-            color: var(--white);
+            color: #FFFFFF;
         }
 
         .download-btn {
             font-size: 1rem;
-            color: var(--white);
+            color: #FFFFFF;
             text-decoration: none;
             padding: 15px 40px;
             border: 2px solid var(--red);
@@ -691,7 +807,7 @@
             text-align: center;
             font-size: 0.85rem;
             color: var(--gray);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--card-border);
         }
 
         /* Scroll Reveal */
@@ -738,6 +854,11 @@
         @media (max-width: 768px) {
             .container {
                 padding: 0 20px;
+            }
+
+            .theme-toggle {
+                left: 20px;
+                top: 20px;
             }
 
             .hero-grid {
@@ -801,6 +922,26 @@
 <body>
     <canvas id="starfield"></canvas>
     
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <!-- Moon icon (shown in dark mode) -->
+        <svg class="moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <!-- Sun icon (shown in light mode) -->
+        <svg class="sun-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3" stroke-width="2" stroke="currentColor"/>
+            <line x1="12" y1="21" x2="12" y2="23" stroke-width="2" stroke="currentColor"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke-width="2" stroke="currentColor"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke-width="2" stroke="currentColor"/>
+            <line x1="1" y1="12" x2="3" y2="12" stroke-width="2" stroke="currentColor"/>
+            <line x1="21" y1="12" x2="23" y2="12" stroke-width="2" stroke="currentColor"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke-width="2" stroke="currentColor"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke-width="2" stroke="currentColor"/>
+        </svg>
+    </button>
+
     <!-- Navigation Dots -->
     <div class="nav-dots">
         <div class="nav-dot active" data-section="hero"></div>
@@ -1091,6 +1232,31 @@
 
     <script>
         // ==========================================
+        // THEME TOGGLE
+        // ==========================================
+        const themeToggle = document.getElementById('themeToggle');
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // Apply saved theme on load
+        if (currentTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                currentTheme = 'light';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                currentTheme = 'dark';
+            }
+            localStorage.setItem('theme', currentTheme);
+            
+            // Update starfield colors
+            updateStarfieldColors();
+        });
+
+        // ==========================================
         // STARFIELD CONSTELLATION ANIMATION
         // ==========================================
         const canvas = document.getElementById('starfield');
@@ -1100,6 +1266,21 @@
         const numStars = 120;
         const connectionDistance = 150;
         const mouseRadius = 200;
+
+        // Dynamic colors based on theme
+        let starColor = { r: 255, g: 255, b: 255 };
+        let lineColor = { r: 220, g: 20, b: 60 };
+
+        function updateStarfieldColors() {
+            if (currentTheme === 'light') {
+                starColor = { r: 80, g: 80, b: 80 };
+            } else {
+                starColor = { r: 255, g: 255, b: 255 };
+            }
+        }
+
+        // Initialize colors
+        updateStarfieldColors();
 
         let mouse = {
             x: null,
@@ -1174,7 +1355,7 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fillStyle = `rgba(${starColor.r}, ${starColor.g}, ${starColor.b}, ${this.opacity})`;
                 ctx.fill();
             }
         }
@@ -1200,7 +1381,7 @@
                         ctx.beginPath();
                         ctx.moveTo(stars[i].x, stars[i].y);
                         ctx.lineTo(stars[j].x, stars[j].y);
-                        ctx.strokeStyle = `rgba(220, 20, 60, ${opacity})`;
+                        ctx.strokeStyle = `rgba(${lineColor.r}, ${lineColor.g}, ${lineColor.b}, ${opacity})`;
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }
@@ -1217,7 +1398,7 @@
                         ctx.beginPath();
                         ctx.moveTo(stars[i].x, stars[i].y);
                         ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(220, 20, 60, ${opacity})`;
+                        ctx.strokeStyle = `rgba(${lineColor.r}, ${lineColor.g}, ${lineColor.b}, ${opacity})`;
                         ctx.lineWidth = 0.8;
                         ctx.stroke();
                     }
@@ -1279,21 +1460,18 @@
             const now = new Date();
             const sydneyTime = new Date(now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
             
-            const day = sydneyTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const day = sydneyTime.getDay();
             const hours = sydneyTime.getHours();
             const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][day];
             
-            // Format date
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Australia/Sydney' };
             const dateStr = sydneyTime.toLocaleDateString('en-US', options);
             
             document.getElementById('statusDate').textContent = dateStr.toUpperCase();
             
-            // Time-based messages
             let message = '';
             
-            // Weekend messages
-            if (day === 0) { // Sunday
+            if (day === 0) {
                 if (hours >= 6 && hours < 12) {
                     message = "It's Sunday morning—probably nursing a coffee and contemplating the week ahead.";
                 } else if (hours >= 12 && hours < 18) {
@@ -1303,7 +1481,7 @@
                 } else {
                     message = "It's past midnight on a Sunday. Either deep in a coding project or should be sleeping.";
                 }
-            } else if (day === 6) { // Saturday
+            } else if (day === 6) {
                 if (hours >= 6 && hours < 12) {
                     message = "Saturday morning—the best time to explore new AI tools without meetings interrupting.";
                 } else if (hours >= 12 && hours < 18) {
@@ -1313,7 +1491,7 @@
                 } else {
                     message = "Past midnight on Saturday. Late night coding session or insomnia browsing tech blogs.";
                 }
-            } else if (day === 1) { // Monday
+            } else if (day === 1) {
                 if (hours >= 8 && hours < 10) {
                     message = "Monday morning. Who doesn't love Mondays? (Said no one ever, but here we are.)";
                 } else if (hours >= 10 && hours < 14) {
@@ -1325,7 +1503,7 @@
                 } else {
                     message = "Past midnight on Monday. Either working on something exciting or need better sleep habits.";
                 }
-            } else if (day === 5) { // Friday
+            } else if (day === 5) {
                 if (hours >= 8 && hours < 12) {
                     message = "Friday morning. The finish line is in sight, but still have work to pretend to do.";
                 } else if (hours >= 12 && hours < 16) {
@@ -1337,7 +1515,7 @@
                 } else {
                     message = "Past midnight on Friday. Either out or deep in a coding session.";
                 }
-            } else { // Tuesday, Wednesday, Thursday
+            } else {
                 if (hours >= 8 && hours < 12) {
                     message = `${dayName} morning at Telstra—juggling accounts, analyzing data, and making AI do the boring stuff.`;
                 } else if (hours >= 12 && hours < 14) {
@@ -1354,14 +1532,9 @@
             document.getElementById('statusMessage').textContent = message;
         }
 
-        // Initialize clock and status
         updateClock();
         updateStatus();
-        
-        // Update clock every second
         setInterval(updateClock, 1000);
-        
-        // Update status every minute
         setInterval(updateStatus, 60000);
 
         // ==========================================
@@ -1379,7 +1552,6 @@
             `;
         }
 
-        // AI Chat Responses
         const responses = {
             "what makes you different from other account managers": 
                 `I focus on making things actually work better. Most account managers manage accounts—I use AI to predict problems before they happen, automate repetitive tasks, and treat every client interaction as a chance to deliver real value. Data-driven strategies combined with genuine customer care.`,
@@ -1409,7 +1581,6 @@
         function askQuestion(question) {
             const chatMessages = document.getElementById('chatMessages');
             
-            // Add user message
             const userMsg = document.createElement('div');
             userMsg.className = 'message user';
             userMsg.innerHTML = `
@@ -1419,12 +1590,10 @@
             chatMessages.appendChild(userMsg);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Simulate thinking delay
             setTimeout(() => {
                 const aiMsg = document.createElement('div');
                 aiMsg.className = 'message';
                 
-                // Find matching response
                 const normalizedQ = question.toLowerCase();
                 let response = responses.default;
                 
@@ -1457,13 +1626,11 @@
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
                 } else {
-                    // Remove visible class when scrolling away
                     entry.target.classList.remove('visible');
                 }
             });
         }, observerOptions);
 
-        // Observe all reveal elements
         document.querySelectorAll('.reveal, .journey-item, .workflow-card').forEach(el => {
             observer.observe(el);
         });
@@ -1478,7 +1645,6 @@
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
                 if (scrollY >= (sectionTop - 200)) {
                     current = section.getAttribute('id');
                 }
@@ -1492,7 +1658,6 @@
             });
         });
 
-        // Smooth scroll for nav dots
         navDots.forEach(dot => {
             dot.addEventListener('click', () => {
                 const section = dot.getAttribute('data-section');
