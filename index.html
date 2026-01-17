@@ -654,6 +654,25 @@
             color: var(--white);
         }
 
+        .download-btn {
+            font-size: 1rem;
+            color: var(--white);
+            text-decoration: none;
+            padding: 15px 40px;
+            border: 2px solid var(--red);
+            background: var(--red);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background: transparent;
+            border-color: var(--red);
+            color: var(--red);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.3);
+        }
+
         .footer {
             padding: 40px 0;
             text-align: center;
@@ -1040,6 +1059,9 @@
                 <a href="mailto:deepeshbatra61@gmail.com" class="contact-link">Email Me</a>
                 <a href="https://linkedin.com/in/deepeshbatra" class="contact-link" target="_blank">LinkedIn</a>
                 <a href="tel:+61456011235" class="contact-link">Call: 0456 011 235</a>
+            </div>
+            <div class="contact-links reveal" style="margin-top: 30px;">
+                <a href="Deepesh-Batra-Resume.pdf" download class="download-btn">📄 Download Resume (PDF)</a>
             </div>
         </div>
     </section>
